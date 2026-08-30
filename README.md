@@ -3,7 +3,8 @@ ParkEasy é um aplicativo que conecta usuários procurando vagas para estacionar
 
 Tecnologias usadas no desenvolvimento: Java, Spring Boot, React, PostgreeSQL, Node.js, Spring Web, JavaScript, CSS3, HMTL5.
 
-| Mmebro | E-mail |
--
-| :--- | :--- | 
-| Bernardo Pedrosa Alves Abreu | bpaa@cesar.school | 
+| Tecnologia | Descrição | Versão |
+| :--- | :--- | :--- |
+| HTML | Estrutura da página | 5 |
+| CSS | Estilização e layout | 3 |
+| JavaScript | Comportamento dinâmico | ES6 |
