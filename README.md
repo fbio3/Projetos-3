@@ -5,5 +5,5 @@ Tecnologias usadas no desenvolvimento: Java, Spring Boot, React, PostgreeSQL, No
 
 | Membro | E-mail |
 -
-| :--- | :--- |
+| :--- | :--- |  
 | Bernardo Pedrosa Alves Abreu | bpaa@cesar.school |
