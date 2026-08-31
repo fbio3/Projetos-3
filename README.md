@@ -16,7 +16,7 @@ Tecnologias usadas no desenvolvimento: Java, Spring Boot, React, PostgreeSQL, No
 
 # Entrega 1
 
-* 🔗 **[Clique aqui para acessar as Histórias de Usuário e Cenários BDD](./BDD.md)**
-Figma:
+* 🔗 **[Clique aqui para acessar as Histórias de Usuário e Cenários BDD](./BDD.md)**  
+Figma:  
 Screencast:
 ---
