@@ -13,3 +13,5 @@ Tecnologias usadas no desenvolvimento: Java, Spring Boot, React, PostgreeSQL, No
 | Pedro Gabriel Paes da Justa Silva | pgpjs@cesar.school |
 | Lucas Rocha Calado | lrc3@cesar.school |
 | Maria Clara Miranda Ferraz | Mcmf2@cesar.school |
+
+# Entrega 1
