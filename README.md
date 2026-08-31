@@ -6,9 +6,10 @@ Tecnologias usadas no desenvolvimento: Java, Spring Boot, React, PostgreeSQL, No
 | Membro | E-mail |
 | :--- | :--- |
 | Bernardo Pedrosa Alves Abreu | bpaa@cesar.school |
+| Diego José Arroxelas Galvão Albuquerque Maranhão | Djagam@cesar.school |
 | Fabio Henrique Dantas Layme Lopes de Albuquerque | fhdlla@cesar.school |
 | Francisco de Amorim Marquese | fam3@cesar.school |
 | Guilherme Henrique Leite Nóbrega | ghln@cesar.school |
 | Pedro Gabriel Paes da Justa Silva | pgpjs@cesar.school |
 | Lucas Rocha Calado | lrc3@cesar.school |
-| Diego José Arroxelas Galvão Albuquerque Maranhão | Djagam@cesar.school |
+| Maria Clara Miranda Ferraz | Mcmf2@cesar.school |
