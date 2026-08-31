@@ -15,7 +15,6 @@ Tecnologias usadas no desenvolvimento: Java, Spring Boot, React, PostgreeSQL, No
 | Maria Clara Miranda Ferraz | Mcmf2@cesar.school |
 
 # Entrega 1
-Conforme solicitado nos requisitos da Entrega 01, toda a especificação detalhada de negócio e validações está centralizada no link abaixo:
 
 * 🔗 **[Clique aqui para acessar as Histórias de Usuário e Cenários BDD](./BDD.md)**
 
