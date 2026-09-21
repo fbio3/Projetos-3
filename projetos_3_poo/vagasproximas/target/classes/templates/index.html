@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ParkEasy - Estacionamento</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Passion+One:wght@700;900&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+  <script type="text/babel" th:src="@{/js/buscar-vagas.jsx}"></script>
+</head>
+<body>
+
+  <!-- Estrutura da página fica no Thymeleaf -->
+  <main class="hero">
+    <header class="hero__topo">
+      <h1 class="logo">ParkEasy</h1>
+      <p class="slogan">Vagas por um preço bom perto de você</p>
+    </header>
+
+    <!-- A parte interativa (busca + resultados) é montada pelo React aqui -->
+    <div id="busca-vagas"></div>
+  </main>
+
+  <!-- React via CDN + Babel para rodar o JSX direto no navegador -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+  <script type="text/babel" th:src="@{/js/busca-vagas.jsx}"></script>
+
+</body>
+</html>
