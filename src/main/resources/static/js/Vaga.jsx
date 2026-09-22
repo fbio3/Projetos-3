@@ -1,14 +1,8 @@
-import { useState, useEffect } from 'react';
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  Popup,
-  useMap,
-} from 'react-leaflet';
-import L from 'leaflet';
+const { useState, useEffect } = React;
+const { MapContainer, TileLayer, Marker, Popup, useMap } = ReactLeaflet;
+const L = window.L;
 
-const API_URL = import.meta.env.VITE_API_URL || '/api';
+const API_URL = '/api';
 
 async function tratarResposta(resposta) {
   if (!resposta.ok) {
@@ -485,22 +479,19 @@ function FiltrarVagas() {
   );
 }
 
-export default function App() {
+function App() {
   const [abaAtiva, setAbaAtiva] = useState('buscar');
 
   return (
-    <main className="hero">
-      <header className="hero__topo">
-        <h1 className="logo">ParkEasy</h1>
-        <p className="slogan">Vagas por um preço bom perto de você</p>
-      </header>
-
+    <React.Fragment>
       <MenuAbas ativa={abaAtiva} onChange={setAbaAtiva} />
 
       <div className="aba-conteudo">
         {abaAtiva === 'buscar' && <BuscarVagas />}
         {abaAtiva === 'filtrar' && <FiltrarVagas />}
       </div>
-    </main>
+    </React.Fragment>
   );
 }
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
