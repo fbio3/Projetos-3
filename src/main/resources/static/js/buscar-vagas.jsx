@@ -5,10 +5,10 @@ const API_URL = '/api/vagas';
 
 const VAGAS_MOCK = [
   { id: 1, nome: 'Estacionamento Central', endereco: 'Rua da Aurora, 120', distanciaMetros: 250, precoHora: 8.5, vagasLivres: 12 },
-  { id: 2, nome: 'Park Shopping', endereco: 'Av. Conde da Boa Vista, 900', distanciaMetros: 480, precoHora: 10, vagasLivres: 4 },
+  { id: 2, nome: 'Park Shopping', endereco: 'Av. Conde da Boa Vista, 900', distanciaMetros: 480, precoHora: 4.5, vagasLivres: 4 },
   { id: 3, nome: 'Garagem do Bairro', endereco: 'Rua do Hospício, 45', distanciaMetros: 900, precoHora: 6, vagasLivres: 20 },
   { id: 4, nome: 'Vaga Segura 24h', endereco: 'Rua Gervásio Pires, 300', distanciaMetros: 1300, precoHora: 7.5, vagasLivres: 2 },
-];
+]; //Valor das vagas estimados e quantas vagas disponiveis existem
 
 async function buscarVagas(params, signal) {
   if (USE_MOCK) {
