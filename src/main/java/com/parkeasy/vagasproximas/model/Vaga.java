@@ -27,6 +27,10 @@ public class Vaga {
     @Enumerated(EnumType.STRING)
     private StatusVaga status = StatusVaga.DISPONIVEL;
 
+    // História 1
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean acessivel = false;
+
     @Transient 
     private Double distanciaMetros;
 
@@ -47,7 +51,7 @@ public class Vaga {
     public String getDescricao() { return descricao; }
     public void setDescricao(String descricao) { this.descricao = descricao; }
 
-    // Compatibilidade com a História 3 (getEndereco)
+    // Compatibilidade com a História 3
     public String getEndereco() { return descricao; }
     public void setEndereco(String endereco) { this.descricao = endereco; }
 
@@ -60,11 +64,14 @@ public class Vaga {
     public StatusVaga getStatus() { return status; }
     public void setStatus(StatusVaga status) { this.status = status; }
 
-    // Compatibilidade com História 3 (isDisponivel)
+    // Compatibilidade com História 3
     public boolean isDisponivel() { return this.status == StatusVaga.DISPONIVEL; }
     public void setDisponivel(boolean disponivel) {
         this.status = disponivel ? StatusVaga.DISPONIVEL : StatusVaga.OCUPADA;
     }
+
+    public boolean isAcessivel() { return acessivel; }
+    public void setAcessivel(boolean acessivel) { this.acessivel = acessivel; }
 
     public Double getDistanciaMetros() { return distanciaMetros; }
     public void setDistanciaMetros(Double distanciaMetros) { this.distanciaMetros = distanciaMetros; }

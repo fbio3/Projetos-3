@@ -63,14 +63,16 @@ public class VagasController {
     
      // Busca vagas dentro do raio (em metros) a partir da localização informada. 
      // lat e lng são obrigatórios: sem eles a resposta é 400 (nada é assumido).
+     // História 1
 
     @GetMapping("/vagas/proximas")
     @ResponseBody
     public List<Vaga> proximas(
         @RequestParam @NotNull @DecimalMin("-90.0") @DecimalMax("90.0") Double lat,
         @RequestParam @NotNull @DecimalMin("-180.0") @DecimalMax("180.0") Double lon,
-        @RequestParam(defaultValue = "500") Double raio) {
-        return service.buscarProximas(lat, lon, raio);
+        @RequestParam(defaultValue = "500") Double raio,
+        @RequestParam(defaultValue = "false") boolean acessivel) {
+        return service.buscarProximas(lat, lon, raio, acessivel);
     }
 
     @GetMapping("/vagas/pesquisar-endereco")
@@ -78,9 +80,3 @@ public class VagasController {
     return "pesquisar-endereco";
 }
 }
-
-    
-
-    
-
-    

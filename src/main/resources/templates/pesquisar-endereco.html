@@ -21,10 +21,16 @@
     </header>
 
     <!-- Formulário de Busca da História 3 -->
-    <div class="busca" style="display: flex; gap: 10px; margin-bottom: 1.5rem;">
+    <div class="busca" style="display: flex; gap: 10px; margin-bottom: 0.75rem;">
       <input type="text" id="campoEndereco" class="campo__input" placeholder="Digite o endereço (ex: Rua do Futuro, Boa Viagem, Rua do Sol)" style="flex: 1;" />
       <button onclick="buscarVagas()" class="botao botao--ativo">Pesquisar</button>
     </div>
+
+    <!-- História 1: filtro de vagas acessíveis (PCD) -->
+    <label for="filtroAcessivel" style="display: block; margin-bottom: 1.5rem; cursor: pointer;">
+      <input type="checkbox" id="filtroAcessivel" />
+      Somente vagas acessíveis (PCD)
+    </label>
 
     <!-- Status e mensagens de erro -->
     <div id="status" class="status"></div>
@@ -55,6 +61,7 @@
 
     async function buscarVagas() {
       const endereco = document.getElementById('campoEndereco').value;
+      const somenteAcessiveis = document.getElementById('filtroAcessivel').checked;
       const statusDiv = document.getElementById('status');
       const listaDiv = document.getElementById('listaVagas');
 
@@ -71,7 +78,8 @@
       }
 
       try {
-        const response = await fetch(`/api/vagas/pesquisar?endereco=${encodeURIComponent(endereco)}`);
+        const url = `/api/vagas/pesquisar?endereco=${encodeURIComponent(endereco)}&acessivel=${somenteAcessiveis}`;
+        const response = await fetch(url);
         
         if (!response.ok) {
           const erro = await response.text();
@@ -80,24 +88,30 @@
         }
 
         const vagas = await response.json();
-        statusDiv.innerText = `Encontrada(s) ${vagas.length} vaga(s) próxima(s).`;
+        statusDiv.innerText = somenteAcessiveis
+          ? `Encontrada(s) ${vagas.length} vaga(s) acessível(is) próxima(s).`
+          : `Encontrada(s) ${vagas.length} vaga(s) próxima(s).`;
 
         if (vagas.length === 0) {
-          listaDiv.innerHTML = "<li>Nenhuma vaga disponível encontrada para esta localização.</li>";
+          listaDiv.innerHTML = somenteAcessiveis
+            ? "<li>Nenhuma vaga acessível encontrada para esta localização.</li>"
+            : "<li>Nenhuma vaga disponível encontrada para esta localização.</li>";
           return;
         }
 
         // Adiciona marcadores no mapa e itens na lista
         vagas.forEach(vaga => {
+          const selo = vaga.acessivel ? ' ♿' : '';
+
           const marker = L.marker([vaga.latitude, vaga.longitude])
             .addTo(mapa)
-            .bindPopup(`<b>${vaga.descricao || vaga.endereco}</b><br>Status: Disponível`);
+            .bindPopup(`<b>${vaga.descricao || vaga.endereco}${selo}</b><br>Status: Disponível${vaga.acessivel ? '<br>Vaga acessível (PCD)' : ''}`);
           marcadores.push(marker);
 
           const item = document.createElement('li');
           item.className = 'vaga';
           item.innerHTML = `
-            <span class="vaga__nome">${vaga.descricao || vaga.endereco}</span>
+            <span class="vaga__nome">${vaga.descricao || vaga.endereco}${selo}</span>
             <span class="vaga__endereco">Lat: ${vaga.latitude} | Lon: ${vaga.longitude}</span>
           `;
           listaDiv.appendChild(item);

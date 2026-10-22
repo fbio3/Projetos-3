@@ -4,16 +4,16 @@ const USE_MOCK = true;
 const API_URL = '/api/vagas';
 
 const VAGAS_MOCK = [
-  { id: 1, nome: 'Estacionamento Central', endereco: 'Rua da Aurora, 120', distanciaMetros: 250, precoHora: 8.5, vagasLivres: 12 },
-  { id: 2, nome: 'Park Shopping', endereco: 'Av. Conde da Boa Vista, 900', distanciaMetros: 480, precoHora: 4.5, vagasLivres: 4 },
-  { id: 3, nome: 'Garagem do Bairro', endereco: 'Rua do Hospício, 45', distanciaMetros: 900, precoHora: 6, vagasLivres: 20 },
-  { id: 4, nome: 'Vaga Segura 24h', endereco: 'Rua Gervásio Pires, 300', distanciaMetros: 1300, precoHora: 7.5, vagasLivres: 2 },
+  { id: 1, nome: 'Estacionamento Central', endereco: 'Rua da Aurora, 120', distanciaMetros: 250, precoHora: 8.5, vagasLivres: 12, acessivel: true },
+  { id: 2, nome: 'Park Shopping', endereco: 'Av. Conde da Boa Vista, 900', distanciaMetros: 480, precoHora: 4.5, vagasLivres: 4, acessivel: false },
+  { id: 3, nome: 'Garagem do Bairro', endereco: 'Rua do Hospício, 45', distanciaMetros: 900, precoHora: 6, vagasLivres: 20, acessivel: true },
+  { id: 4, nome: 'Vaga Segura 24h', endereco: 'Rua Gervásio Pires, 300', distanciaMetros: 1300, precoHora: 7.5, vagasLivres: 2, acessivel: false },
 ]; //Valor das vagas estimados e quantas vagas disponiveis existem
 
 async function buscarVagas(params, signal) {
   if (USE_MOCK) {
     await new Promise((resolve) => setTimeout(resolve, 400));
-    return VAGAS_MOCK;
+    return params.acessivel ? VAGAS_MOCK.filter((v) => v.acessivel) : VAGAS_MOCK;
   }
   const query = new URLSearchParams(params).toString();
   const resposta = await fetch(`${API_URL}?${query}`, { signal });
@@ -41,7 +41,10 @@ function CardVaga({ vaga }) {
 
   return (
     <li className="vaga">
-      <h2 className="vaga__nome">{vaga.nome}</h2>
+      <h2 className="vaga__nome">
+        {vaga.nome}
+        {vaga.acessivel && <span title="Vaga acessível (PCD)" aria-label="Vaga acessível"> ♿</span>}
+      </h2>
       <p className="vaga__endereco">{vaga.endereco}</p>
       <div className="vaga__rodape">
         <span className="vaga__preco">{formatarPreco(vaga.precoHora)}/h</span>
@@ -60,10 +63,17 @@ function BuscaVagas() {
   const [status, setStatus] = useState('parado'); // parado | carregando | ok | erro
   const [mensagem, setMensagem] = useState('');
   const [tempoReal, setTempoReal] = useState(false);
+  const [somenteAcessiveis, setSomenteAcessiveis] = useState(false);
 
   const watchId = useRef(null);
   const abortRef = useRef(null);
   const ultimaPos = useRef(null);
+  const acessivelRef = useRef(false);
+
+  // Mantém o valor atual do filtro acessível dentro do watchPosition
+  useEffect(() => {
+    acessivelRef.current = somenteAcessiveis;
+  }, [somenteAcessiveis]);
 
   // Cleanup: cancela requisição pendente e para o watch ao desmontar
   useEffect(() => {
@@ -88,7 +98,13 @@ function BuscaVagas() {
       if (controller.signal.aborted) return;
       setVagas(dados);
       setStatus('ok');
-      setMensagem(dados.length === 0 ? 'Nenhuma vaga encontrada por aqui.' : '');
+      setMensagem(
+        dados.length === 0
+          ? params.acessivel
+            ? 'Nenhuma vaga acessível encontrada por aqui.'
+            : 'Nenhuma vaga encontrada por aqui.'
+          : ''
+      );
     } catch (erro) {
       if (erro.name === 'AbortError') return;
       setStatus('erro');
@@ -103,7 +119,7 @@ function BuscaVagas() {
       setMensagem('Digite sua localização para encontrar vagas próximas.');
       return;
     }
-    carregar({ local: local.trim() });
+    carregar({ local: local.trim(), acessivel: somenteAcessiveis });
   }
 
   function alternarTempoReal() {
@@ -143,7 +159,7 @@ function BuscaVagas() {
         }
         ultimaPos.current = { lat, lng };
 
-        carregar({ lat, lng });
+        carregar({ lat, lng, acessivel: acessivelRef.current });
       },
       () => {
         if (watchId.current !== null) {
@@ -188,6 +204,15 @@ function BuscaVagas() {
             <circle cx="12" cy="9.5" r="2.5" />
           </svg>
         </div>
+
+        <label className="filtro" style={{ display: 'block', margin: '0.5rem 0' }}>
+          <input
+            type="checkbox"
+            checked={somenteAcessiveis}
+            onChange={(e) => setSomenteAcessiveis(e.target.checked)}
+          />{' '}
+          Somente vagas acessíveis (PCD)
+        </label>
 
         <div className="acoes">
           <button type="submit" className="botao">Encontrar vagas</button>

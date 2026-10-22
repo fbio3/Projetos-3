@@ -1,17 +1,23 @@
 package com.parkeasy.vagasproximas.repository;
-import org.springframework.stereotype.Repository;
+
+import com.parkeasy.vagasproximas.model.Vaga;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+@Repository
+public interface VagaRepository extends JpaRepository<Vaga, Long> {
 
-@Repository 
-public interface VagaRepository extends JpaRepository<com.parkeasy.vagasproximas.model.Vaga, Long> {
-
-    @Query("Select v from Vaga v where v.status = 'DISPONIVEL' and v.latitude between :minLat and :maxLat and v.longitude between :minLon and :maxLon"
-    + " and v.longitude between :minLon and :maxLon")
-    List<com.parkeasy.vagasproximas.model.Vaga> findVagasProximas(@Param("minLat") Double minLat, @Param("maxLat") Double maxLat, 
-                                                                @Param("minLon") Double minLon, @Param("maxLon") Double maxLon);    
-    
+    @Query("SELECT v FROM Vaga v WHERE v.status = 'DISPONIVEL' "
+         + "AND v.latitude BETWEEN :minLat AND :maxLat "
+         + "AND v.longitude BETWEEN :minLon AND :maxLon "
+         + "AND (:somenteAcessiveis = false OR v.acessivel = true)")
+    List<Vaga> findVagasProximas(@Param("minLat") Double minLat,
+                                 @Param("maxLat") Double maxLat,
+                                 @Param("minLon") Double minLon,
+                                 @Param("maxLon") Double maxLon,
+                                 @Param("somenteAcessiveis") boolean somenteAcessiveis);
 }

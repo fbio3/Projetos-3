@@ -39,6 +39,12 @@ public class VagaService {
 
     @Transactional(readOnly = true)
     public List<Vaga> buscarProximas(double lat, double lon, double raioMetros) {
+        return buscarProximas(lat, lon, raioMetros, false);
+    }
+
+    // História 1
+    @Transactional(readOnly = true)
+    public List<Vaga> buscarProximas(double lat, double lon, double raioMetros, boolean somenteAcessiveis) {
         double deltaLat = Math.toDegrees(raioMetros / EARTH_RADIUS_METERS);
         double deltaLon = Math.toDegrees(raioMetros / (EARTH_RADIUS_METERS * Math.cos(Math.toRadians(lat))));
 
@@ -47,7 +53,7 @@ public class VagaService {
         double minLon = lon - deltaLon;
         double maxLon = lon + deltaLon;
 
-        List<Vaga> vagas = vagaRepository.findVagasProximas(minLat, maxLat, minLon, maxLon);
+        List<Vaga> vagas = vagaRepository.findVagasProximas(minLat, maxLat, minLon, maxLon, somenteAcessiveis);
 
         vagas.forEach(v -> v.setDistanciaMetros(
                 distancia(lat, lon, v.getLatitude(), v.getLongitude())));
@@ -58,9 +64,16 @@ public class VagaService {
                 .toList();
     }
 
+    // Mantido para compatibilidade com as outras histórias
     @Transactional(readOnly = true)
     public List<Vaga> buscarVagasProximas(double lat, double lon, double raioKm) {
-        return buscarProximas(lat, lon, raioKm * 1000.0);
+        return buscarVagasProximas(lat, lon, raioKm, false);
+    }
+
+    // História 1
+    @Transactional(readOnly = true)
+    public List<Vaga> buscarVagasProximas(double lat, double lon, double raioKm, boolean somenteAcessiveis) {
+        return buscarProximas(lat, lon, raioKm * 1000.0, somenteAcessiveis);
     }
 
     private static double distancia(double lat1, double lon1, double lat2, double lon2) {

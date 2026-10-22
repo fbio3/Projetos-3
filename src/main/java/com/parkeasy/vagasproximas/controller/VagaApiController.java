@@ -25,7 +25,8 @@ public class VagaApiController {
     @GetMapping("/pesquisar")
     public ResponseEntity<?> pesquisarVagas(
             @RequestParam(required = false) String endereco,
-            @RequestParam(defaultValue = "5.0") Double raioKm) {
+            @RequestParam(defaultValue = "5.0") Double raioKm,
+            @RequestParam(defaultValue = "false") boolean acessivel) {
 
         if (endereco == null || endereco.isBlank()) {
             return ResponseEntity
@@ -44,7 +45,8 @@ public class VagaApiController {
         List<Vaga> vagasProximas = vagaService.buscarVagasProximas(
                 localizacao.getLatitude(),
                 localizacao.getLongitude(),
-                raioKm
+                raioKm,
+                acessivel
         );
 
         return ResponseEntity.ok(vagasProximas);
