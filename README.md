@@ -43,10 +43,50 @@ Tecnologias usadas no desenvolvimento: Java, Spring Boot, React, PostgreeSQL, No
 
 ---
 
-## 🐛 Issue / Bug Tracker (GitHub)
+<details>
+<summary><H2>🐛 Issue / Bug Tracker (GitHub)</H2></summary>
 
 *(Utilização do GitHub Issues/Projects em todas as semanas da entrega)*
 
 ![Print do GitHub Issues/Bug Tracker](docs/images/bug-tracker.jpeg)
+</details>
+---
 
+# Entrega 03
+
+## 📜 Histórias Implementadas
+
+> 📌 **História de Usuário 01 — Filtrar vagas acessíveis (PCD)**  
+> **Como** motorista com deficiência,  
+> **Quero** filtrar vagas acessíveis (PCD),  
+> **Para** garantir que o local atenda minhas necessidades.
+
+> 📌 **História de Usuário 05 — Ver valor estimado antes de ir**  
+> **Como** motorista,  
+> **Quero** ver o valor estimado antes de ir para a vaga,  
+> **Para** saber quanto vou pagar.
+
+---
+
+## 🎥 Screencasts (YouTube)
+
+* 🔗 **Sistema funcionando (novas histórias):** [Assistir Vídeo do Uso do Sistema](link)
+* 🔗 **Explicação do código das histórias implementadas:** [Assistir Vídeo da Explicação do Código](link)
+
+---
+
+<details>
+<summary><H2>🖥️ Print da Tela<H2></summary>
+
+![Print da tela do sistema - Entrega 03](docs/images/tela-entrega-03.png)
+</details>
+---
+
+<details>
+<summary><H2>🐛 Issue / Bug Tracker (GitHub)</H2></summary>
+
+*(Utilização do GitHub Issues/Projects atualizado, com commits frequentes ao longo da entrega)*
+
+![Print do GitHub Issues/Bug Tracker - Entrega 03](docs/images/bug-tracker-entrega-03.png)
+</details>
 ---
