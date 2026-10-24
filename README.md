@@ -40,6 +40,7 @@ Tecnologias usadas no desenvolvimento: Java, Spring Boot, React, PostgreeSQL, No
 ## 🎥 Screencasts (YouTube)
 
 * 🔗 **Uso do Sistema (Spring Boot Rodando):** [Assistir Vídeo do Uso do Sistema](https://youtu.be/ods2P-Mu_C8)
+* 🔗 **Explicação do código das histórias implementadas:** [Assistir Vídeo da Explicação do Código](https://youtu.be/TEi_j4Bat6k)
 
 ---
 
@@ -70,8 +71,8 @@ Tecnologias usadas no desenvolvimento: Java, Spring Boot, React, PostgreeSQL, No
 
 ## 🎥 Screencasts (YouTube)
 
-* 🔗 **Sistema funcionando (novas histórias):** [Assistir Vídeo do Uso do Sistema](link)
-* 🔗 **Explicação do código das histórias implementadas:** [Assistir Vídeo da Explicação do Código](link)
+* 🔗 **Sistema funcionando (novas histórias):** [Assistir Vídeo do Uso do Sistema](https://youtu.be/ztiag7sU68c)
+* 🔗 **Explicação do código das histórias implementadas:** [Assistir Vídeo da Explicação do Código](https://youtu.be/5fgyGqbKtIc)
 
 ---
 
