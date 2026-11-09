@@ -1,12 +1,11 @@
-package com.parkeasy.vagasproximas.controller;
+package com.parkeasy.vagasproximas.exception;
 
-import com.parkeasy.vagasproximas.exception.ConflitoTarifaException;
-import com.parkeasy.vagasproximas.exception.TarifaNaoEncontradaException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import com.parkeasy.vagasproximas.controller.TarifaApiController;
 
 import java.util.Map;
 

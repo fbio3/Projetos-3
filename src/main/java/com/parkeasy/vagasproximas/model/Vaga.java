@@ -2,6 +2,7 @@ package com.parkeasy.vagasproximas.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import java.math.BigDecimal;
 
 @Entity
 public class Vaga {
@@ -33,6 +34,10 @@ public class Vaga {
 
     @Transient 
     private Double distanciaMetros;
+
+    // História 7: tarifa vigente no momento da consulta (null se não houver tarifa configurada)
+    @Transient
+    private BigDecimal precoHora;
 
     public Vaga() {}
 
@@ -72,6 +77,9 @@ public class Vaga {
 
     public boolean isAcessivel() { return acessivel; }
     public void setAcessivel(boolean acessivel) { this.acessivel = acessivel; }
+
+    public BigDecimal getPrecoHora() { return precoHora; }
+    public void setPrecoHora(BigDecimal precoHora) { this.precoHora = precoHora; }
 
     public Double getDistanciaMetros() { return distanciaMetros; }
     public void setDistanciaMetros(Double distanciaMetros) { this.distanciaMetros = distanciaMetros; }

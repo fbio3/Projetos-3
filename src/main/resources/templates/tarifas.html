@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ParkEasy - Tarifas por Horário</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Passion+One:wght@700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+  <main class="hero">
+    <header class="hero__topo">
+      <h1 class="logo">ParkEasy</h1>
+      <p class="slogan">Tarifas por horário (operador)</p>
+    </header>
+
+    <!-- Escolha da vaga -->
+    <div style="margin-bottom: 1.5rem;">
+      <label for="selectVaga"><b>Vaga</b></label>
+      <select id="selectVaga" class="campo__input" style="width: 100%; margin-top: 6px;"></select>
+    </div>
+
+    <div id="status" class="status" role="status" aria-live="polite"></div>
+
+    <!-- Formulário de cadastro / edição -->
+    <form id="formTarifa" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 2rem;">
+      <h2 id="tituloForm" style="font-family: var(--fonte-titulo); font-size: 1.5rem;">Nova tarifa</h2>
+
+      <input type="text" id="nome" class="campo__input" placeholder="Nome (ex.: Diurna, Noturna, Fim de semana)" required />
+
+      <fieldset id="dias" style="border: 1px solid #3a3a3a; border-radius: 12px; padding: 10px;">
+        <legend>Dias da semana</legend>
+      </fieldset>
+
+      <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <label style="flex: 1;">Início
+          <input type="time" id="horaInicio" class="campo__input" required style="width: 100%;" />
+        </label>
+        <label style="flex: 1;">Fim
+          <input type="time" id="horaFim" class="campo__input" required style="width: 100%;" />
+        </label>
+        <label style="flex: 1;">Preço por hora (R$)
+          <input type="number" id="precoHora" class="campo__input" min="0" step="0.01" required style="width: 100%;" />
+        </label>
+      </div>
+      <small>Janela que cruza a meia-noite é permitida (ex.: 18:00 às 06:00). Início igual ao fim significa o dia inteiro.</small>
+
+      <div class="acoes">
+        <button type="submit" id="btnSalvar" class="botao botao--ativo">Salvar tarifa</button>
+        <button type="button" id="btnCancelar" class="botao" style="display: none;">Cancelar edição</button>
+      </div>
+    </form>
+
+    <!-- Lista de tarifas da vaga -->
+    <h2 style="font-family: var(--fonte-titulo); font-size: 1.5rem; margin-bottom: 1rem;">Tarifas cadastradas</h2>
+    <ul id="listaTarifas" class="lista" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 2rem;"></ul>
+
+    <!-- Consulta de preço (visão do motorista) -->
+    <h2 style="font-family: var(--fonte-titulo); font-size: 1.5rem; margin-bottom: 1rem;">Consultar preço em um horário</h2>
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 0.75rem;">
+      <input type="datetime-local" id="momento" class="campo__input" style="flex: 1;" />
+      <button type="button" id="btnConsultar" class="botao">Consultar preço</button>
+    </div>
+    <div id="resultadoPreco" class="status"></div>
+
+    <p style="margin-top: 2rem;"><a href="/" class="botao" style="text-decoration: none;">Voltar para a busca</a></p>
+  </main>
+
+  <script>
+    const DIAS = [
+      ['MONDAY', 'Seg'], ['TUESDAY', 'Ter'], ['WEDNESDAY', 'Qua'], ['THURSDAY', 'Qui'],
+      ['FRIDAY', 'Sex'], ['SATURDAY', 'Sáb'], ['SUNDAY', 'Dom']
+    ];
+    const NOME_DIA = Object.fromEntries(DIAS);
+
+    const $ = (id) => document.getElementById(id);
+    let tarifas = [];
+    let editandoId = null;
+
+    function esc(s) {
+      return String(s ?? '').replace(/[&<>"']/g, (c) =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
+
+    function hora(h) {
+      if (Array.isArray(h)) return h.slice(0, 2).map((n) => String(n).padStart(2, '0')).join(':');
+      return String(h).slice(0, 5);
+    }
+
+    const reais = (v) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+    function mostrar(msg, erro = false) {
+      const s = $('status');
+      s.className = 'status' + (erro ? ' status--erro' : '');
+      s.textContent = msg;
+    }
+
+    async function lerErro(resp) {
+      const texto = await resp.text();
+      try {
+        const j = JSON.parse(texto);
+        return j.mensagem || j.message || j.erro || j.error || j.detail || texto;
+      } catch {
+        return texto || `Erro ${resp.status}`;
+      }
+    }
+
+    // Checkboxes dos dias
+    DIAS.forEach(([valor, rotulo]) => {
+      const l = document.createElement('label');
+      l.style.marginRight = '14px';
+      l.innerHTML = `<input type="checkbox" name="dia" value="${valor}" /> ${rotulo}`;
+      $('dias').appendChild(l);
+    });
+
+    function vagaAtual() {
+      return $('selectVaga').value;
+    }
+
+    async function carregarVagas() {
+      try {
+        const resp = await fetch('/api/vagas');
+        const vagas = await resp.json();
+        $('selectVaga').innerHTML = vagas
+          .map((v) => `<option value="${v.id}">#${v.id} - ${esc(v.descricao)}</option>`)
+          .join('');
+        await carregarTarifas();
+      } catch (e) {
+        mostrar('Erro ao carregar as vagas.', true);
+      }
+    }
+
+    async function carregarTarifas() {
+      const id = vagaAtual();
+      if (!id) return;
+      const resp = await fetch(`/api/vagas/${id}/tarifas`);
+      tarifas = await resp.json();
+      const lista = $('listaTarifas');
+      lista.innerHTML = '';
+      if (tarifas.length === 0) {
+        lista.innerHTML = '<li>Nenhuma tarifa cadastrada para esta vaga.</li>';
+        return;
+      }
+      tarifas.forEach((t) => {
+        const li = document.createElement('li');
+        li.className = 'vaga';
+        const dias = (t.dias || []).map((d) => NOME_DIA[d] || d).join(', ');
+        li.innerHTML = `
+          <span class="vaga__nome">${esc(t.nome)} - ${reais(t.precoHora)}/h</span>
+          <span class="vaga__endereco">${esc(dias)} | ${hora(t.horaInicio)} às ${hora(t.horaFim)}</span>
+          <button type="button" class="botao" data-editar="${t.id}">Editar</button>`;
+        lista.appendChild(li);
+      });
+    }
+
+    function limparForm() {
+      editandoId = null;
+      $('formTarifa').reset();
+      $('tituloForm').textContent = 'Nova tarifa';
+      $('btnSalvar').textContent = 'Salvar tarifa';
+      $('btnCancelar').style.display = 'none';
+    }
+
+    function editar(id) {
+      const t = tarifas.find((x) => String(x.id) === String(id));
+      if (!t) return;
+      editandoId = t.id;
+      $('nome').value = t.nome;
+      $('horaInicio').value = hora(t.horaInicio);
+      $('horaFim').value = hora(t.horaFim);
+      $('precoHora').value = t.precoHora;
+      document.querySelectorAll('input[name="dia"]').forEach((c) => {
+        c.checked = (t.dias || []).includes(c.value);
+      });
+      $('tituloForm').textContent = `Editando: ${t.nome}`;
+      $('btnSalvar').textContent = 'Salvar alterações';
+      $('btnCancelar').style.display = 'inline-block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    $('listaTarifas').addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-editar]');
+      if (btn) editar(btn.dataset.editar);
+    });
+
+    $('btnCancelar').addEventListener('click', () => {
+      limparForm();
+      mostrar('');
+    });
+
+    $('selectVaga').addEventListener('change', () => {
+      limparForm();
+      mostrar('');
+      $('resultadoPreco').textContent = '';
+      carregarTarifas();
+    });
+
+    $('formTarifa').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const dias = [...document.querySelectorAll('input[name="dia"]:checked')].map((c) => c.value);
+      if (dias.length === 0) {
+        mostrar('Selecione pelo menos um dia da semana.', true);
+        return;
+      }
+
+      const corpo = {
+        nome: $('nome').value.trim(),
+        dias,
+        horaInicio: $('horaInicio').value,
+        horaFim: $('horaFim').value,
+        precoHora: parseFloat($('precoHora').value)
+      };
+
+      const id = vagaAtual();
+      const url = editandoId
+        ? `/api/vagas/${id}/tarifas/${editandoId}`
+        : `/api/vagas/${id}/tarifas`;
+
+      try {
+        const resp = await fetch(url, {
+          method: editandoId ? 'PUT' : 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(corpo)
+        });
+        if (!resp.ok) {
+          mostrar(await lerErro(resp), true);
+          return;
+        }
+        mostrar(editandoId ? 'Tarifa atualizada com sucesso.' : 'Tarifa cadastrada com sucesso.');
+        limparForm();
+        await carregarTarifas();
+      } catch (err) {
+        mostrar('Erro ao comunicar com o servidor.', true);
+      }
+    });
+
+    $('btnConsultar').addEventListener('click', async () => {
+      const id = vagaAtual();
+      const out = $('resultadoPreco');
+      let url = `/api/vagas/${id}/preco`;
+      let momento = $('momento').value;
+      if (momento) {
+        if (momento.length === 16) momento += ':00';
+        url += `?momento=${encodeURIComponent(momento)}`;
+      }
+      try {
+        const resp = await fetch(url);
+        if (!resp.ok) {
+          out.className = 'status status--erro';
+          out.textContent = await lerErro(resp);
+          return;
+        }
+        const t = await resp.json();
+        out.className = 'status';
+        out.textContent = `Tarifa "${t.nome}": ${reais(t.precoHora)} por hora.`;
+      } catch (err) {
+        out.className = 'status status--erro';
+        out.textContent = 'Erro ao comunicar com o servidor.';
+      }
+    });
+
+    carregarVagas();
+  </script>
+</body>
+</html>

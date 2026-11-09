@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -15,9 +16,11 @@ public class VagaService {
 
     private static final double EARTH_RADIUS_METERS = 6371000;
     private final VagaRepository vagaRepository;
+    private final TarifaService tarifaService;
 
-    public VagaService(VagaRepository vagaRepository) {
+    public VagaService(VagaRepository vagaRepository, TarifaService tarifaService) {
         this.vagaRepository = vagaRepository;
+        this.tarifaService = tarifaService;
     }
 
     public List<Vaga> listarVagas() {
@@ -55,8 +58,13 @@ public class VagaService {
 
         List<Vaga> vagas = vagaRepository.findVagasProximas(minLat, maxLat, minLon, maxLon, somenteAcessiveis);
 
-        vagas.forEach(v -> v.setDistanciaMetros(
-                distancia(lat, lon, v.getLatitude(), v.getLongitude())));
+        LocalDateTime agora = LocalDateTime.now();
+        vagas.forEach(v -> {
+            v.setDistanciaMetros(distancia(lat, lon, v.getLatitude(), v.getLongitude()));
+            // História 7: preço da tarifa vigente agora
+            tarifaService.buscarVigente(v.getId(), agora)
+                    .ifPresent(t -> v.setPrecoHora(t.getPrecoHora()));
+        });
 
         return vagas.stream()
                 .filter(v -> v.getDistanciaMetros() <= raioMetros)
