@@ -16,7 +16,7 @@
 <body>
   <main class="hero">
     <header class="hero__topo">
-      <h1 class="logo">ParkEasy</h1>
+      <h1 class="logo"><a href="/" title="Voltar para o início" style="color: inherit; text-decoration: none;">ParkEasy</a></h1>
       <p class="slogan">Pesquisar Vagas Próximas por Endereço</p>
     </header>
 
@@ -105,7 +105,7 @@
 
           const marker = L.marker([vaga.latitude, vaga.longitude])
             .addTo(mapa)
-            .bindPopup(`<b>${vaga.descricao || vaga.endereco}${selo}</b><br>Status: Disponível${vaga.acessivel ? '<br>Vaga acessível (PCD)' : ''}`);
+            .bindPopup(`<b>${vaga.descricao || vaga.endereco}${selo}</b><br>Status: Disponível${vaga.acessivel ? '<br>Vaga acessível (PCD)' : ''}<br><a href="/reportar-problema?vagaId=${vaga.id}">Reportar problema</a>`);
           marcadores.push(marker);
 
           const item = document.createElement('li');
@@ -113,6 +113,8 @@
           item.innerHTML = `
             <span class="vaga__nome">${vaga.descricao || vaga.endereco}${selo}</span>
             <span class="vaga__endereco">Lat: ${vaga.latitude} | Lon: ${vaga.longitude}</span>
+            <!-- História 6: atalho para reportar problema nesta vaga -->
+            <a href="/reportar-problema?vagaId=${vaga.id}" class="vaga__endereco" style="color: #fca5a5; margin-top: 0.4rem;">Reportar problema nesta vaga</a>
           `;
           listaDiv.appendChild(item);
         });

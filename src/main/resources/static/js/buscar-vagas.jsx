@@ -53,6 +53,14 @@ function CardVaga({ vaga }) {
           <span className={classeLivres}>{vaga.vagasLivres} livres</span>
         </span>
       </div>
+      {/* História 6: atalho para reportar problema nesta vaga */}
+      <a
+        href={`/reportar-problema?vagaId=${vaga.id}`}
+        className="vaga__endereco"
+        style={{ color: '#fca5a5', marginTop: '0.4rem' }}
+      >
+        Reportar problema nesta vaga
+      </a>
     </li>
   );
 }

@@ -1,104 +1,464 @@
-
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>ParkEasy - Reportar Problema</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f4f4;
-            text-align: center;
-            padding: 50px;
-        }
-        .formulario {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            max-width: 400px;
-            margin: auto;
-        }
-        input, select, button {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            box-sizing: border-box;
-        }
-        button {
-            background: #333;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ParkEasy - Reportar Problema</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Passion+One:wght@700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/style.css}">
+
+  <!-- Estilos específicos da História 6 -->
+  <style>
+    .reporte {
+      max-width: 640px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+    }
+
+    .reporte__passo {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+      border: 0;
+    }
+
+    .reporte__rotulo {
+      font-family: var(--fonte-titulo);
+      font-size: 1.35rem;
+      font-weight: 700;
+    }
+
+    .reporte__rotulo small {
+      font-family: var(--fonte-texto);
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: var(--texto-suave);
+      margin-left: 0.35rem;
+    }
+
+    .reporte__select,
+    .reporte__texto {
+      padding-left: 1.25rem;
+    }
+
+    .reporte__select {
+      appearance: none;
+      cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1.1rem center;
+      background-size: 18px;
+    }
+
+    .reporte__select option {
+      background: var(--fundo-item);
+      color: var(--texto);
+    }
+
+    .reporte__texto {
+      height: auto;
+      min-height: 110px;
+      border-radius: 18px;
+      padding-top: 0.9rem;
+      padding-bottom: 0.9rem;
+      resize: vertical;
+      font-size: 1rem;
+    }
+
+    .reporte__contador {
+      align-self: flex-end;
+      font-size: 0.85rem;
+      color: var(--texto-suave);
+    }
+
+    /* Opções de tipo de problema em formato de cartão */
+    .tipos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.85rem;
+    }
+
+    .tipo {
+      position: relative;
+      display: flex;
+      gap: 0.85rem;
+      align-items: flex-start;
+      background: var(--fundo-item);
+      border: 2px solid transparent;
+      border-radius: 16px;
+      padding: 1rem 1.1rem;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .tipo:hover {
+      background: #363636;
+    }
+
+    .tipo input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .tipo__icone {
+      flex: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--controle);
+      display: grid;
+      place-items: center;
+    }
+
+    .tipo__icone svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .tipo__titulo {
+      display: block;
+      font-weight: 600;
+      font-size: 1.05rem;
+    }
+
+    .tipo__descricao {
+      display: block;
+      color: var(--texto-suave);
+      font-size: 0.9rem;
+      margin-top: 0.2rem;
+    }
+
+    .tipo:has(input:checked) {
+      border-color: #ffffff;
+      background: #363636;
+    }
+
+    .tipo:has(input:checked) .tipo__icone {
+      background: #ffffff;
+      color: #212121;
+    }
+
+    .tipo:has(input:focus-visible) {
+      outline: 3px solid #ffffff;
+      outline-offset: 3px;
+    }
+
+    .tipos--erro .tipo {
+      border-color: #fca5a5;
+    }
+
+    .reporte__select:focus-visible,
+    .reporte__texto:focus-visible {
+      outline: 3px solid #ffffff;
+      outline-offset: 3px;
+    }
+
+    .reporte__acoes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    /* Sem o ponto verde de "tempo real" nesta página */
+    .reporte .botao--ativo::before {
+      display: none;
+    }
+
+    .botao:disabled {
+      opacity: 0.6;
+      cursor: wait;
+    }
+
+    .botao--link {
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    /* Mensagens */
+    .aviso {
+      border-radius: 16px;
+      padding: 1rem 1.25rem;
+      font-size: 1rem;
+    }
+
+    .aviso:empty {
+      display: none;
+    }
+
+    .aviso--erro {
+      background: rgba(252, 165, 165, 0.12);
+      color: #fca5a5;
+    }
+
+    .aviso--ok {
+      background: rgba(134, 239, 172, 0.12);
+      color: #86efac;
+    }
+
+    /* Lista de reportes recentes */
+    .recentes {
+      max-width: 640px;
+      margin: 3rem auto 0;
+    }
+
+    .recentes h2 {
+      font-family: var(--fonte-titulo);
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .recentes ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .recentes li {
+      background: var(--fundo-item);
+      border-radius: 14px;
+      padding: 0.85rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .recentes__topo {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      font-weight: 600;
+    }
+
+    .recentes__data,
+    .recentes__texto {
+      color: var(--texto-suave);
+      font-size: 0.9rem;
+      font-weight: 400;
+    }
+
+    .selo {
+      display: inline-block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 0.15rem 0.6rem;
+      border-radius: 999px;
+      margin-left: 0.4rem;
+      background: var(--controle);
+    }
+  </style>
 </head>
 <body>
-    <div class="formulario">
-        <h1>Reportar problema</h1>
+  <main class="hero">
+    <header class="hero__topo">
+      <h1 class="logo">ParkEasy</h1>
+      <p class="slogan">Reportar problema em uma vaga</p>
+    </header>
 
-        <form id="formReporte">
-            <input type="number" id="vagaId"
-                   placeholder="Número da vaga"
-                   min="1" required>
+    <!-- História 6: formulário de reporte -->
+    <form id="formReporte" class="reporte" novalidate>
 
-            <select id="tipoProblema" required>
-                <option value="">Selecione o problema</option>
-                <option value="VAGA_OCUPADA">
-                    Vaga ocupada indevidamente
-                </option>
-                <option value="INFORMACAO_INCORRETA">
-                    Informação incorreta
-                </option>
-            </select>
+      <div class="reporte__passo">
+        <label for="vagaId" class="reporte__rotulo">1. Qual vaga?</label>
+        <select id="vagaId" class="campo__input reporte__select" required>
+          <option value="">Carregando vagas...</option>
+        </select>
+      </div>
 
-            <button type="submit">Enviar reporte</button>
-        </form>
+      <fieldset class="reporte__passo">
+        <legend class="reporte__rotulo" style="margin-bottom: 0.6rem;">2. Qual é o problema?</legend>
+        <div id="tipos" class="tipos">
+          <label class="tipo">
+            <input type="radio" name="tipoProblema" value="VAGA_OCUPADA">
+            <span class="tipo__icone" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/>
+                <circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/>
+              </svg>
+            </span>
+            <span>
+              <span class="tipo__titulo">Vaga ocupada indevidamente</span>
+              <span class="tipo__descricao">Aparece como disponível, mas já tem um carro.</span>
+            </span>
+          </label>
 
-        <p id="mensagem" role="status"></p>
-        <a href="/">Voltar ao início</a>
-    </div>
+          <label class="tipo">
+            <input type="radio" name="tipoProblema" value="INFORMACAO_INCORRETA">
+            <span class="tipo__icone" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/>
+              </svg>
+            </span>
+            <span>
+              <span class="tipo__titulo">Informação incorreta</span>
+              <span class="tipo__descricao">Endereço, preço, acessibilidade ou outro dado errado.</span>
+            </span>
+          </label>
+        </div>
+      </fieldset>
 
-    <script>
-        document.getElementById("formReporte")
-        .addEventListener("submit", async function(event) {
-            event.preventDefault();
+      <div class="reporte__passo">
+        <label for="descricao" class="reporte__rotulo">3. Detalhes <small>(opcional)</small></label>
+        <textarea id="descricao" class="campo__input reporte__texto" maxlength="500"
+                  placeholder="Ex.: o preço mostrado é R$ 5, mas na placa está R$ 8."></textarea>
+        <span id="contador" class="reporte__contador">0/500</span>
+      </div>
 
-            const vagaId = Number(
-                document.getElementById("vagaId").value
-            );
-            const tipoProblema =
-                document.getElementById("tipoProblema").value;
+      <p id="mensagem" class="aviso" role="status" aria-live="polite"></p>
 
-            const mensagem = document.getElementById("mensagem");
+      <div class="reporte__acoes">
+        <button type="submit" id="btnEnviar" class="botao botao--ativo">Enviar reporte</button>
+        <a href="/vagas/pesquisar-endereco" class="botao botao--link">Voltar para a pesquisa</a>
+      </div>
+    </form>
 
-            if (!tipoProblema) {
-                mensagem.textContent =
-                    "Selecione o tipo de problema.";
-                return;
-            }
+    <!-- Reportes registrados (para análise posterior) -->
+    <section class="recentes" aria-labelledby="tituloRecentes">
+      <h2 id="tituloRecentes">Reportes recentes</h2>
+      <ul id="listaRecentes"></ul>
+      <p id="semRecentes" class="status" style="margin-top: 0;">Nenhum reporte enviado ainda.</p>
+    </section>
+  </main>
 
-            try {
-                const resposta = await fetch("/api/reportes", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        vagaId: vagaId,
-                        tipoProblema: tipoProblema
-                    })
-                });
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const TIPOS = {
+      VAGA_OCUPADA: 'Vaga ocupada indevidamente',
+      INFORMACAO_INCORRETA: 'Informação incorreta'
+    };
+    let nomesVagas = {};
 
-                mensagem.textContent = await resposta.text();
+    function esc(s) {
+      return String(s ?? '').replace(/[&<>"']/g, (c) =>
+        ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    }
 
-                if (resposta.ok) {
-                    document.getElementById("formReporte").reset();
-                }
-            } catch (erro) {
-                mensagem.textContent =
-                    "Erro ao enviar o reporte.";
-            }
+    function mostrar(texto, tipo) {
+      const m = $('mensagem');
+      m.textContent = texto;
+      m.className = 'aviso' + (tipo ? ' aviso--' + tipo : '');
+    }
+
+    function tipoSelecionado() {
+      const marcado = document.querySelector('input[name="tipoProblema"]:checked');
+      return marcado ? marcado.value : '';
+    }
+
+    // Carrega as vagas e já seleciona a que veio na URL (?vagaId=)
+    async function carregarVagas() {
+      const select = $('vagaId');
+      try {
+        const resp = await fetch('/api/vagas');
+        const vagas = await resp.json();
+        nomesVagas = Object.fromEntries(vagas.map((v) => [v.id, v.descricao]));
+
+        select.innerHTML = '<option value="">Selecione a vaga</option>' + vagas
+          .map((v) => `<option value="${v.id}">#${v.id} - ${esc(v.descricao)}</option>`)
+          .join('');
+
+        const daUrl = new URLSearchParams(location.search).get('vagaId');
+        if (daUrl && nomesVagas[daUrl] !== undefined) {
+          select.value = daUrl;
+        }
+      } catch (e) {
+        select.innerHTML = '<option value="">Não foi possível carregar as vagas</option>';
+        mostrar('Erro ao carregar as vagas. Recarregue a página.', 'erro');
+      }
+    }
+
+    async function carregarRecentes() {
+      try {
+        const resp = await fetch('/api/reportes');
+        const reportes = await resp.json();
+        $('semRecentes').style.display = reportes.length ? 'none' : 'block';
+        $('listaRecentes').innerHTML = reportes.map((r) => {
+          const data = r.criadoEm
+            ? new Date(r.criadoEm).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
+            : '';
+          const vaga = nomesVagas[r.vagaId] ? ` · ${esc(nomesVagas[r.vagaId])}` : '';
+          return `
+            <li>
+              <span class="recentes__topo">
+                <span>Vaga #${r.vagaId}${vaga}<span class="selo">${esc(TIPOS[r.tipoProblema] || r.tipoProblema)}</span></span>
+                <span class="recentes__data">${data}</span>
+              </span>
+              ${r.descricao ? `<span class="recentes__texto">${esc(r.descricao)}</span>` : ''}
+            </li>`;
+        }).join('');
+      } catch (e) {
+        $('semRecentes').textContent = 'Não foi possível carregar os reportes.';
+      }
+    }
+
+    $('descricao').addEventListener('input', (e) => {
+      $('contador').textContent = `${e.target.value.length}/500`;
+    });
+
+    // Tira o destaque de erro assim que o motorista escolhe um tipo
+    document.querySelectorAll('input[name="tipoProblema"]').forEach((r) =>
+      r.addEventListener('change', () => $('tipos').classList.remove('tipos--erro')));
+
+    $('formReporte').addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      const vagaId = $('vagaId').value;
+      const tipoProblema = tipoSelecionado();
+      const descricao = $('descricao').value.trim();
+
+      // Cenário 3: não envia sem o tipo de problema
+      if (!tipoProblema) {
+        $('tipos').classList.add('tipos--erro');
+        mostrar('Selecione o tipo de problema.', 'erro');
+        document.querySelector('input[name="tipoProblema"]').focus();
+        return;
+      }
+
+      if (!vagaId) {
+        mostrar('Selecione a vaga.', 'erro');
+        $('vagaId').focus();
+        return;
+      }
+
+      const botao = $('btnEnviar');
+      botao.disabled = true;
+      botao.textContent = 'Enviando...';
+
+      try {
+        const resposta = await fetch('/api/reportes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ vagaId: Number(vagaId), tipoProblema, descricao })
         });
-    </script>
+
+        const texto = await resposta.text();
+
+        if (resposta.ok) {
+          // Cenários 1 e 2: confirma o envio
+          mostrar(texto, 'ok');
+          document.querySelectorAll('input[name="tipoProblema"]').forEach((r) => (r.checked = false));
+          $('descricao').value = '';
+          $('contador').textContent = '0/500';
+          carregarRecentes();
+        } else {
+          mostrar(texto || 'Não foi possível enviar o reporte.', 'erro');
+        }
+      } catch (erro) {
+        mostrar('Erro ao enviar o reporte. Verifique sua conexão.', 'erro');
+      } finally {
+        botao.disabled = false;
+        botao.textContent = 'Enviar reporte';
+      }
+    });
+
+    carregarVagas().then(carregarRecentes);
+  </script>
 </body>
 </html>
