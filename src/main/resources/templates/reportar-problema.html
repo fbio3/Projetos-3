@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>ParkEasy - Reportar Problema</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            text-align: center;
+            padding: 50px;
+        }
+        .formulario {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            max-width: 400px;
+            margin: auto;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            box-sizing: border-box;
+        }
+        button {
+            background: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="formulario">
+        <h1>Reportar problema</h1>
+
+        <form id="formReporte">
+            <input type="number" id="vagaId"
+                   placeholder="Número da vaga"
+                   min="1" required>
+
+            <select id="tipoProblema" required>
+                <option value="">Selecione o problema</option>
+                <option value="VAGA_OCUPADA">
+                    Vaga ocupada indevidamente
+                </option>
+                <option value="INFORMACAO_INCORRETA">
+                    Informação incorreta
+                </option>
+            </select>
+
+            <button type="submit">Enviar reporte</button>
+        </form>
+
+        <p id="mensagem" role="status"></p>
+        <a href="/">Voltar ao início</a>
+    </div>
+
+    <script>
+        document.getElementById("formReporte")
+        .addEventListener("submit", async function(event) {
+            event.preventDefault();
+
+            const vagaId = Number(
+                document.getElementById("vagaId").value
+            );
+            const tipoProblema =
+                document.getElementById("tipoProblema").value;
+
+            const mensagem = document.getElementById("mensagem");
+
+            if (!tipoProblema) {
+                mensagem.textContent =
+                    "Selecione o tipo de problema.";
+                return;
+            }
+
+            try {
+                const resposta = await fetch("/api/reportes", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        vagaId: vagaId,
+                        tipoProblema: tipoProblema
+                    })
+                });
+
+                mensagem.textContent = await resposta.text();
+
+                if (resposta.ok) {
+                    document.getElementById("formReporte").reset();
+                }
+            } catch (erro) {
+                mensagem.textContent =
+                    "Erro ao enviar o reporte.";
+            }
+        });
+    </script>
+</body>
+</html>
