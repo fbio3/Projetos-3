@@ -93,3 +93,39 @@ Tecnologias usadas no desenvolvimento: Java, Spring Boot, React, PostgreeSQL, No
 ![Print do GitHub Issues/Bug Tracker - Entrega 03](docs/images/bug-tracker-entrega-03.png)
 </details>
 ---
+
+# Entrega 4
+
+## 📜 Histórias Implementadas
+
+> 📌 **História de Usuário 06 — Reportar problemas**  
+> **Como** motorista,  
+> **Quero** reportar problemas (vaga ocupada indevidamente, informação incorreta),  
+> **Para** manter a qualidade dos dados do app.
+
+> 📌 **História de Usuário 07 — Atualizar preços por horário**  
+> **Como** operador,  
+> **Quero** atualizar preços por horário (ex.: tarifa diurna/noturna, fim de semana),  
+> **Para** refletir minha política comercial.
+
+---
+
+## 🎥 Screencasts (YouTube)
+
+* 🔗 **Sistema funcionando (novas histórias):** [Assistir Vídeo do Uso do Sistema](https://youtu.be/U-uoImsQADQ)
+* 🔗 **Explicação do código das histórias implementadas:** [Assistir Vídeo da Explicação do Código](https://youtu.be/qizN5fMLp0k)
+
+---
+
+---
+
+<details>
+<summary><H2>🐛 Issue / Bug Tracker (GitHub)</H2></summary>
+
+*(Utilização do GitHub Issues/Projects atualizado, com commits frequentes ao longo da entrega)*
+
+* bugs novos encontrados no sistema
+
+![Print do GitHub Issues/Bug Tracker - Entrega 03](docs/images/bug-tracker-entrega-04.png)
+</details>
+---
